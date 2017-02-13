@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<style>
+
+.container {
+  border: 1px solid #eee;
+  width: 1000px;
+}
+
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.node {
+  font: 10px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+.link.highlight {
+  stroke: gold;
+  stroke-width: 3px;
+}
+
+.prob {
+  fill: gold;
+  display: none;
+}
+
+.nodeContent {
+  box-sizing: border-box;
+  text-align: center;
+  background: #f4f4f4;
+  border: 2px solid #f4f4f4;
+  border-bottom: 2px solid #dbdada;
+
+  font-size: 12px;
+  padding-top: 5px;
+  font-family: "Times New Roman",Georgia,Serif;
+}
+.nodeContent.active {
+  border: 2px solid gold;
+}
+.nodeContent .day {
+  display: block;
+  margin-bottom: 5px;
+  color: #5a5a5a;
+  text-transform: uppercase;
+}
+
+.nodeContent .versus {
+  margin-top: 10px;
+}
+
+.nodeContent .versus > span{
+  display: inline-block;
+  width: 33%;
+  vertical-align: baseline;
+}
+
+.nodeContent .versus .timeAndScore {
+  background-color: #dbdbdb;
+  line-height: 20px;
+  font-weight: bold;
+  vertical-align: top;
+}
+.nodeContent .versus .team {
+  font-weight: bold;
+  padding-top: 3px;
+  vertical-align: top;
+}
+
+.nodeContent .versus .team.highlight {
+  background-color: gold;
+}
+
+.nodeContent .versus .team img{
+  max-width: 32px;
+  margin-top: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+.nodeContent .versus .team1  {
+  text-align: right;
+}
+.nodeContent .versus .team2 {
+  text-align: left;
+}
+
+.nodeContent .flag {
+  color: #5a5a5a;
+}
+.nodeContent .place {
+  margin-top: 3px;
+  color: #5a5a5a;
+}
+
+</style>
+<body>
+2016-06-25:
+<div id="container3" class="container"></div>
+init:
+<div id="container" class="container"></div>
+part:
+<div id="container2" class="container"></div>
+<script src="d3.v3.min.js"></script>
+<script src="jquery-1.7.1.js"></script>
+<script>
+  // not in json for easy-edit
+  // data from:
+  // https://www.betfair.com/exchange/plus/#/football/market/1.121920739
+  // https://www.betfair.com/exchange/plus/#/football/market/1.121920738
+  // https://www.betfair.com/exchange/plus/#/football/market/1.121920737
+  // https://www.betfair.com/exchange/plus/#/football/market/1.108039554
+  var probability1 = {
+    'BEL': {
+      'Round-of-16': 1 / 1.28,
+      "Quarter-Finals": 1 / 1.72,
+      "Semi-Finals": 1 / 3.1,
+      "Final": 1 / 7.6
+    },
+    'CRO': {
+      'Round-of-16': 1 /1.82,
+      "Quarter-Finals": 1 / 2.92,
+      "Semi-Finals": 1 / 4.6,
+      "Final": 1 / 10
+    },
+    'ENG': {
+      'Round-of-16': 1 /1.24,
+      "Quarter-Finals": 1 / 2.8,
+      "Semi-Finals": 1 / 7,
+      "Final": 1 / 11
+    },
+    'FRA': {
+      'Round-of-16': 1 /1.19,
+      "Quarter-Finals": 1 / 1.85,
+      "Semi-Finals": 1 / 3.45,
+      "Final": 1 / 5.6
+    },
+    'GER': {
+      'Round-of-16': 1 /1.18,
+      "Quarter-Finals": 1 / 2.3,
+      "Semi-Finals": 1 / 3.8,
+      "Final": 1 / 6
+    },
+    'HUN': {
+      'Round-of-16': 1 / 4.3,
+      "Quarter-Finals": 1 / 9.2,
+      "Semi-Finals": 1 / 32,
+      "Final": 1 / 100
+    },
+    'ICE': {
+      'Round-of-16': 1 / 4.9,
+      "Quarter-Finals": 1 / 24,
+      "Semi-Finals": 1 / 80,
+      "Final": 1 / 180
+    },
+    'IRE': {
+      'Round-of-16': 1 / 6,
+      "Quarter-Finals": 1 / 13,
+      "Semi-Finals": 1 / 55,
+      "Final": 1 / 200
+    },
+    'ITA': {
+      'Round-of-16': 1 / 2.64,
+      "Quarter-Finals": 1 / 5.4,
+      "Semi-Finals": 1 / 11.5,
+      "Final": 1 / 19
+    },
+    'NI': {
+      'Round-of-16': 1 / 3.15,
+      "Quarter-Finals": 1 / 12,
+      "Semi-Finals": 1 / 60,
+      "Final": 1 / 310
+    },
+    'POL': {
+      'Round-of-16': 1 / 1.77,
+      "Quarter-Finals": 1 / 4.4,
+      "Semi-Finals": 1 / 9.4,
+      "Final": 1 / 27
+    },
+    'POR': {
+      'Round-of-16': 1 / 2.12,
+      "Quarter-Finals": 1 / 3.55,
+      "Semi-Finals": 1 / 6,
+      "Final": 1 / 16.5
+    },
+    'SPA': {
+      'Round-of-16': 1 / 1.58,
+      "Quarter-Finals": 1 / 2.82,
+      "Semi-Finals": 1 / 4.6,
+      "Final": 1 / 7.6
+    },
+    'SVK': {
+      'Round-of-16': 1 / 6.2,
+      "Quarter-Finals": 1 / 24,
+      "Semi-Finals": 1 / 85,
+      "Final": 1 / 250
+    },
+    'SWI': {
+      'Round-of-16': 1 / 2.2,
+      "Quarter-Finals": 1 / 6,
+      "Semi-Finals": 1 / 18,
+      "Final": 1 / 55
+    },
+    'WAL': {
+      'Round-of-16': 1 / 1.45,
+      "Quarter-Finals": 1 / 4.3,
+      "Semi-Finals": 1 / 11,
+      "Final": 1 / 30
+    }
+  };
+  var probability2 = {
+    'BEL': {
+      'Round-of-16': 1,
+      "Quarter-Finals": 0,
+      "Semi-Finals": 0,
+      "Final": 0
+    },
+    'CRO': {
+      'Round-of-16': 1 /1.82,
+      "Quarter-Finals": 1 / 2.92,
+      "Semi-Finals": 1 / 4.6,
+      "Final": 1 / 10
+    },
+    'ENG': {
+      'Round-of-16': 1 /1.24,
+      "Quarter-Finals": 1 / 2.8,
+      "Semi-Finals": 1 / 7,
+      "Final": 1 / 11
+    },
+    'FRA': {
+      'Round-of-16': 1 /1.19,
+      "Quarter-Finals": 1 / 1.85,
+      "Semi-Finals": 1 / 3.45,
+      "Final": 1 / 5.6
+    },
+    'GER': {
+      'Round-of-16': 1 /1.18,
+      "Quarter-Finals": 1 / 2.3,
+      "Semi-Finals": 1 / 3.8,
+      "Final": 1 / 6
+    },
+    'HUN': {
+      'Round-of-16': 0,
+      "Quarter-Finals": 0,
+      "Semi-Finals": 0,
+      "Final": 0
+    },
+    'ICE': {
+      'Round-of-16': 1 / 4.9,
+      "Quarter-Finals": 1 / 24,
+      "Semi-Finals": 1 / 80,
+      "Final": 1 / 180
+    },
+    'IRE': {
+      'Round-of-16': 1 / 6,
+      "Quarter-Finals": 1 / 13,
+      "Semi-Finals": 1 / 55,
+      "Final": 1 / 200
+    },
+    'ITA': {
+      'Round-of-16': 1 / 2.64,
+      "Quarter-Finals": 1 / 5.4,
+      "Semi-Finals": 1 / 11.5,
+      "Final": 1 / 19
+    },
+    'NI': {
+      'Round-of-16': 0,
+      "Quarter-Finals": 0,
+      "Semi-Finals": 0,
+      "Final": 0
+    },
+    'POL': {
+      'Round-of-16': 1 / 1.77,
+      "Quarter-Finals": 1 / 4.4,
+      "Semi-Finals": 1 / 9.4,
+      "Final": 1 / 27
+    },
+    'POR': {
+      'Round-of-16': 1 / 2.12,
+      "Quarter-Finals": 1 / 3.55,
+      "Semi-Finals": 1 / 6,
+      "Final": 1 / 16.5
+    },
+    'SPA': {
+      'Round-of-16': 1 / 1.58,
+      "Quarter-Finals": 1 / 2.82,
+      "Semi-Finals": 1 / 4.6,
+      "Final": 1 / 7.6
+    },
+    'SVK': {
+      'Round-of-16': 1 / 6.2,
+      "Quarter-Finals": 1 / 24,
+      "Semi-Finals": 1 / 85,
+      "Final": 1 / 250
+    },
+    'SWI': {
+      'Round-of-16': 1 / 2.2,
+      "Quarter-Finals": 1 / 6,
+      "Semi-Finals": 1 / 18,
+      "Final": 1 / 55
+    },
+    'WAL': {
+      'Round-of-16': 1,
+      "Quarter-Finals": 1,
+      "Semi-Finals": 1,
+      "Final": 1 / 30
+    }
+  };
+  var probability3 = {
+    'BEL': {
+      'Round-of-16': 1 / 1.28,
+      "Quarter-Finals": 1 / 1.79,
+      "Semi-Finals": 1 / 3,
+      "Final": 1 / 7.4
+    },
+    'CRO': {
+      'Round-of-16': 0,
+      "Quarter-Finals": 0,
+      "Semi-Finals": 0,
+      "Final": 0
+    },
+    'ENG': {
+      'Round-of-16': 1 / 1.24,
+      "Quarter-Finals": 1 / 2.78,
+      "Semi-Finals": 1 / 6.6,
+      "Final": 1 / 11
+    },
+    'FRA': {
+      'Round-of-16': 1 / 1.2,
+      "Quarter-Finals": 1 / 1.82,
+      "Semi-Finals": 1 / 3.35,
+      "Final": 1 / 5.9
+    },
+    'GER': {
+      'Round-of-16': 1 /1.18,
+      "Quarter-Finals": 1 / 2.26,
+      "Semi-Finals": 1 / 3.85,
+      "Final": 1 / 6
+    },
+    'HUN': {
+      'Round-of-16': 1 / 4.3,
+      "Quarter-Finals": 1 / 10,
+      "Semi-Finals": 1 / 32,
+      "Final": 1 / 90
+    },
+    'ICE': {
+      'Round-of-16': 1 / 5,
+      "Quarter-Finals": 1 / 20,
+      "Semi-Finals": 1 / 80,
+      "Final": 1 / 180
+    },
+    'IRE': {
+      'Round-of-16': 1 / 5.1,
+      "Quarter-Finals": 1 / 16.5,
+      "Semi-Finals": 1 / 70,
+      "Final": 1 / 180
+    },
+    'ITA': {
+      'Round-of-16': 1 / 2.7,
+      "Quarter-Finals": 1 / 5.7,
+      "Semi-Finals": 1 / 11,
+      "Final": 1 / 18
+    },
+    'NI': {
+      'Round-of-16': 0,
+      "Quarter-Finals": 0,
+      "Semi-Finals": 0,
+      "Final": 0
+    },
+    'POL': {
+      'Round-of-16': 1,
+      "Quarter-Finals": 1 / 2.48,
+      "Semi-Finals": 1 / 5.7,
+      "Final": 1 / 20
+    },
+    'POR': {
+      'Round-of-16': 1,
+      "Quarter-Finals": 1 / 1.62,
+      "Semi-Finals": 1 / 2.9,
+      "Final": 1 / 7.2
+    },
+    'SPA': {
+      'Round-of-16': 1 / 1.54,
+      "Quarter-Finals": 1 / 2.66,
+      "Semi-Finals": 1 / 4.6,
+      "Final": 1 / 7.2
+    },
+    'SVK': {
+      'Round-of-16': 1 / 6.4,
+      "Quarter-Finals": 1 / 23,
+      "Semi-Finals": 1 / 80,
+      "Final": 1 / 220
+    },
+    'SWI': {
+      'Round-of-16': 0,
+      "Quarter-Finals": 0,
+      "Semi-Finals": 0,
+      "Final": 0
+    },
+    'WAL': {
+      'Round-of-16': 1,
+      "Quarter-Finals": 1 / 2.98,
+      "Semi-Finals": 1 / 7.8,
+      "Final": 1 / 26
+    }
+  };
+</script>
+<script>
+// example from http://bl.ocks.org/mbostock/4063570
+var champion = function (config) {
+  config = config || {};
+
+  var $container = $(config.container);
+  var probability = config.probability;
+  var w = config.width || 1000;
+  var h = config.height || 960;
+  var margin = config.margin || {top: 5, right: 160, bottom: 20, left: 160},
+      width = 960 - margin.left - margin.right,
+      height = 1000 - margin.top - margin.bottom;
+
+  var imagePath = config.imagePath || 'image/';
+  var groupDataPath = config.groupDataPath || 'schedule.json';
+  var teamList = config.teamList || ['BEL', 'CRO', 'ENG', 'FRA', 'GER', 'HUN', 'ICE', 'IRE',
+  'ITA', 'NI', 'POL', 'POR', 'SPA', 'SVK', 'SWI', 'WAL'];
+
+  var nodeHeight = 112;
+  var nodeWidth = 144;
+
+  var nodeHash = {}; // key node name
+  var linkHash = {}; // key sourceName + '--' + targetName
+  var targetHash = {}; // key: target name
+  var sourceHash = {}; // key: sourceName, value: array of targets
+
+
+  var drawNode = function (d) {
+    nodeHash[d.name] = d;
+    var html = '<div xmlns="http://www.w3.org/1999/xhtml" class="nodeContent">' +
+        '<div class="day">' + d.day + '</div>' +
+        '<div class="versus">' +
+          '<span class="team team1 team-' + d.team1 + '"><span class="teamName">' + d.team1 + '&nbsp;&nbsp;</span>' +
+          (teamList.indexOf(d.team1) > -1 ? '<img src="' + imagePath + d.team1.toLowerCase() + '.png"/>' : '') +
+          '</span>' +
+          '<span class="timeAndScore">' +
+            '<span class="time">' + d.time + '</span><br/>' +
+            '<span class="score">' + (d.score ? d.score : '') + '</span>' +
+          '</span>' +
+          '<span class="team team2 team-' + d.team2 + '"><span class="teamName">&nbsp;&nbsp;' + d.team2 + '</span>' +
+          (teamList.indexOf(d.team2) > -1 ? '<img src="' + imagePath + d.team2.toLowerCase() + '.png"/>' : '') +
+          '</span>' +
+        '</div>' +
+        '<div class="place">' + d.place + '</div>' +
+      '</div>';
+    var c = $(html)
+      .css({
+          'width': nodeWidth ,
+          'height': nodeHeight
+        });
+
+    // no team flag
+    if (teamList.indexOf(d.team1) === -1 && teamList.indexOf(d.team2) === -1) {
+      c.find('.flag').hide();
+    }
+
+    c.data('data', d);
+
+    $(this).append(c);
+  };
+
+  var cluster = d3.layout.tree()
+      .size([height, width])
+      .separation(function(a, b) { return 1; })
+      //.nodeSize([nodeWidth, nodeHeight]);
+
+      // var diagonal = d3.svg.diagonal()
+      //     .projection(function(d) { return [width - d.y, d.x]; });
+
+  var diagonal = function (d) {
+    linkHash[d.source.name + '--' + d.target.name] = d;
+    targetHash[d.target.name] = d;
+    if (sourceHash[d.source.name]) {
+      sourceHash[d.source.name].push(d.target);
+    } else {
+      sourceHash[d.source.name] = [d.target];
+    }
+    // vertical
+    var x0 = width - d.source.y,
+        x1 = width - d.target.y,
+        y0 = d.source.x,
+        y1 = d.target.x;
+    d.linkPath = "M" + x0 + "," + y0
+         + "L" + (x0 + x1) / 2 + "," + y0
+         + "L" + (x0 + x1) / 2 + "," + y1
+         + "L" + x1 + "," + y1;
+    d._elem = this;
+    return d.linkPath;
+  };
+
+  var highlightLink = function (node) {
+    /*
+    {
+      name: 'Round-of-16-7',
+      team: 'FRA',
+      topNodeName: 'Semi-Finals' // optional
+    }
+    */
+    $('.team-' + node.team).addClass('highlight');
+    var linkTarget = [];
+    // leaf teamnode
+    var target = {name: $('.team-' + node.team).last().closest('.nodeContent').data('data').name};
+    while (targetHash[target.name]) {
+      if (probability[node.team][nodeHash[target.name].group] === 0) { // not show 0
+        break;
+      }
+      linkTarget.push(target.name);
+      target = targetHash[target.name].source;
+      if (node.topNodeName && target.name === node.topNodeName) {
+        break;
+      }
+    }
+    var $lastLink = $container.find('path').last();
+    var getPercentage = function (d) {
+      var p = (d * 100).toFixed(1) + '%';
+      if (p === '100.0%') { // not show 100%;
+        p = '';
+      }
+      return p;
+    };
+    linkTarget.forEach(function (d) {
+      var $link = $container.find('.link-target-' + d)
+      var $clone = $link.clone();
+      $clone.attr('class', 'link highlight');
+      $clone.insertAfter($lastLink);
+
+      var group = $link.attr('data-group');
+      var $prop = $container.find('.prob-target-' + d)
+      var probValue = getPercentage(probability[node.team][group]);
+      $prop.text(probValue).show();
+    });
+
+    // console.log(linkTarget);
+    // TODO: need more compatible
+    if (linkTarget.length === 3) {
+      var probValue = getPercentage(probability[node.team]['Final']);
+      $container.find('.last-prob').text(probValue).show();
+    }
+
+  };
+
+  var lowlightLink = function () {
+    $('.team.highlight').removeClass('highlight');
+    $container.find('.link.highlight').remove();
+    $container.find('.prob').hide();
+  };
+
+  var svg = d3.select($container[0]).append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+  d3.json(groupDataPath, function(error, root) {
+    if (error) throw error;
+
+    var nodes = cluster.nodes(root),
+        links = cluster.links(nodes);
+
+    var prob = svg.selectAll(".prob")
+        .data(links)
+      .enter().append("text")
+        .attr("class", function (d) {
+          return 'prob prob-source-' + d.source.name + ' prob-target-' + d.target.name;
+        })
+        .attr("data-group", function (d) {
+          return d.target.group;
+        })
+        .attr('dx', function (d) {
+          var x0 = width - d.source.y,
+              x1 = width - d.target.y,
+              y0 = d.source.x,
+              y1 = d.target.x;
+          return (x0 + x1) / 2;
+        })
+        .attr('dy', function (d) {
+          var x0 = width - d.source.y,
+              x1 = width - d.target.y,
+              y0 = d.source.x,
+              y1 = d.target.x;
+          return y0 < y1 ? y1 + 12 : y1 - 12;
+        })
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "central")
+        .text(function (d) {
+          return '100%';
+        });
+
+    var lastprob = svg.append("text")
+        .attr("dx", function(d) { return width - 0 + nodeWidth / 2 + 3; })
+        .attr("dy", function (d) { return height / 2; })
+        .attr('class', 'prob last-prob')
+        .attr("text-anchor", "start")
+        .attr("dominant-baseline", "central")
+        .text('100%');
+
+    var link = svg.selectAll(".link")
+        .data(links)
+      .enter().append("path")
+        .attr("class", function (d) {
+          return 'link link-source-' + d.source.name + ' link-target-' + d.target.name;
+        })
+        .attr("data-group", function (d) {
+          return d.target.group;
+        })
+        .attr("d", diagonal);
+
+    var node = svg.selectAll(".node")
+        .data(nodes)
+      .enter().append("g")
+        .attr("class", "node")
+        .attr("transform", function(d) { return "translate(" + (width - d.y) + "," + d.x + ")"; })
+
+    var foreignObject = node.append("foreignObject")
+        .attr("height", function(d) { return nodeHeight; })
+        .attr("width", function (d) { drawNode.call(this, d); return nodeWidth; })
+        .attr("transform", function(d) { return "translate(" + (-nodeWidth / 2) + "," + (-nodeHeight / 2) + ")"; });
+
+    // console.log(targetHash);
+    //highlightLink({name: 'Round-of-16-7', team: 'FRA'});
+
+    $container.on('mouseenter', '.team', function () {
+      $node = $(this).closest('.nodeContent');
+      var nodeData = $node.data('data');
+      var team = $(this).find('.teamName').text().trim();
+      if (teamList.indexOf(team) === -1) {
+        return;
+      }
+      lowlightLink();
+      highlightLink({team: team, name: nodeData.name});
+    });
+
+    $container.on('mouseleave', '.team', function () {
+      var team = $(this).find('.teamName').text().trim();
+      if (teamList.indexOf(team) === -1) {
+        return;
+      }
+      lowlightLink();
+    });
+
+
+    $container.on('mouseenter', '.nodeContent', function () {
+      var nodeData = $(this).data('data');
+      $(this).addClass('active');
+      if (teamList.indexOf(nodeData.team1) > -1 && teamList.indexOf(nodeData.team2) > -1) {
+        return;
+      }
+      var group = nodeData.group;
+      var sources = [];
+      var searchTargets = function (node) {
+        var targetNodes = sourceHash[node.name];
+        if (!targetNodes) {
+          sources.push(node);
+        } else {
+          targetNodes.forEach(function (d) {
+            searchTargets(d);
+          });
+        }
+      };
+      searchTargets(nodeData);
+      var max = 0;
+      var r = { topNodeName: nodeData.name};
+      sources.forEach(function (s) {
+        if (probability[s.team1][group] > max) {
+          max = probability[s.team1][group];
+          r.team = s.team1;
+          r.name = s.name;
+        }
+        if (probability[s.team2][group] > max) {
+          max = probability[s.team2][group];
+          r.team = s.team2;
+          r.name = s.name;
+        }
+      });
+
+      lowlightLink();
+      highlightLink(r);
+    });
+
+    $container.on('mouseleave', '.nodeContent', function () {
+      $(this).removeClass('active');
+      lowlightLink();
+    });
+
+  });
+
+};
+
+champion({
+  container: $('#container'),
+  probability: probability1,
+  width: 1000,
+  height: 960,
+  imagePath: 'image/',
+  //groupDataPath: 'schedule.json',
+  groupDataPath: 'schedule.json'
+});
+
+champion({
+  container: $('#container2'),
+  probability: probability2,
+  width: 1000,
+  height: 960,
+  imagePath: 'image/',
+  //groupDataPath: 'schedule.json',
+  groupDataPath: 'schedule2.json'
+});
+
+champion({
+  container: $('#container3'),
+  probability: probability3,
+  width: 1000,
+  height: 960,
+  imagePath: 'image/',
+  //groupDataPath: 'schedule.json',
+  groupDataPath: 'schedule3.json'
+});
+
+</script>
+
+
+
+
+

@@ -1,0 +1,128 @@
+{
+  "name": "Final",
+  "group": "Final",
+  "day": "SUNDAY 10TH JULY",
+  "time": "20:00",
+  "team1": "FN1",
+  "team2": "FN2",
+  "place": "Stade de France, Paris",
+  "children": [{
+    "name": "Semi-Finals1",
+    "group": "Semi-Finals",
+    "day": "WEDNESDAY 6TH JULY",
+    "time": "20:00",
+    "team1": "SF1",
+    "team2": "SF2",
+    "place": "Parc OL, Lyon",
+    "children": [{
+      "name": "Quarter-Finals1",
+      "group": "Quarter-Finals",
+      "day": "THURSDAY 30TH JUNE",
+      "time": "20:00",
+      "team1": "QF1",
+      "team2": "QF2",
+      "place": "Stade Vélodrome, Marseille",
+      "children": [{
+        "name": "Round-of-16-1",
+        "group": "Round-of-16",
+        "day": "SATURDAY 25TH JUNE",
+        "time": "14:00",
+        "team1": "SWI",
+        "team2": "POL",
+        "place": "Stade Geoffroy-Guichard, Saint-Étienne"
+      }, {
+        "name": "Round-of-16-2",
+        "group": "Round-of-16",
+        "day": "SATURDAY 25TH JUNE",
+        "time": "20:00",
+        "team1": "CRO",
+        "team2": "POR",
+        "place": "Stade Felix Bollaert-Delelis, Lens"
+      }]
+    }, {
+      "name": "Quarter-Finals2",
+      "group": "Quarter-Finals",
+      "day": "FRIDAY 1ST JULY",
+      "time": "20:00",
+      "team1": "QF3",
+      "team2": "QF4",
+      "place": "Stade Pierre-Mauroy, Lille",
+      "children": [{
+        "name": "Round-of-16-3",
+        "group": "Round-of-16",
+        "day": "SATURDAY 25TH JUNE",
+        "time": "17:00",
+        "team1": "WAL",
+        "team2": "NI",
+        "place": "Parc des Princes, Paris"
+      }, {
+        "name": "Round-of-16-4",
+        "group": "Round-of-16",
+        "day": "SUNDAY 26TH JUNE",
+        "time": "20:00",
+        "team1": "HUN",
+        "team2": "BEL",
+        "place": "Stadium Municipal, Toulouse, Toulouse"
+      }]
+    }]
+  },{
+    "name": "Semi-Finals2",
+    "group": "Semi-Finals",
+    "day": "THURSDAY 7TH JULY",
+    "time": "20:00",
+    "team1": "SF3",
+    "team2": "SF4",
+    "place": "Stade Vélodrome, Marseille",
+    "children": [{
+      "name": "Quarter-Finals3",
+      "group": "Quarter-Finals",
+      "day": "SATURDAY 2ND JULY",
+      "time": "20:00",
+      "team1": "QF5",
+      "team2": "QF6",
+      "place": "Matmut Atlantique, Bordeaux",
+      "children": [{
+        "name": "Round-of-16-5",
+        "group": "Round-of-16",
+        "day": "SUNDAY 26TH JUNE",
+        "time": "17:00",
+        "team1": "GER",
+        "team2": "SVK",
+        "place": "Stade Pierre-Mauroy, Lille"
+      }, {
+        "name": "Round-of-16-6",
+        "group": "Round-of-16",
+        "day": "MONDAY 27TH JUNE",
+        "time": "17:00",
+        "team1": "ITA",
+        "team2": "SPA",
+        "place": "Stade de France, Paris"
+      }]
+    }, {
+      "name": "Quarter-Finals4",
+      "group": "Quarter-Finals",
+      "day": "SUNDAY 3RD JULY",
+      "time": "20:00",
+      "team1": "QF7",
+      "team2": "QF8",
+      "place": "Stade de France, Paris",
+      "children": [{
+        "name": "Round-of-16-7",
+        "group": "Round-of-16",
+        "day": "SUNDAY 26TH JUNE",
+        "time": "14:00",
+        "team1": "FRA",
+        "team2": "IRE",
+        "place": "Parc OL, Lyon"
+      }, {
+        "name": "Round-of-16-8",
+        "group": "Round-of-16",
+        "day": "MONDAY 27TH JUNE",
+        "time": "20:00",
+        "team1": "ENG",
+        "team2": "ICE",
+        "place": "Allianz Riviera, Nice"
+      }]
+    }]
+  }]
+}
