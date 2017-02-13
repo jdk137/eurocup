@@ -1,5 +1,5 @@
 # eurocup
-Euro cup champion predict and game result present
+Euro cup champion prediction and knockout game result presentation.
 
 Based on d3.js and jquery.js.
 Data can be refreshed every hours base on gamble website.
